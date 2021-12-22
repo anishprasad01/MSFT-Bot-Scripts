@@ -4,23 +4,23 @@ import argparse
 import webbrowser
 
 class Arguments:
-  def __init__(self, v, p, w, vb, s):
-    self.version = v
+  def __init__(self, r, p, w, v, s):
+    self.release = r
     self.path = p
     self.wipe = w
-    self.verbose = vb
+    self.verbose = v
     self.start = s
 
 
 def parse_args():
     argument_parser = argparse.ArgumentParser()
-    argument_parser.add_argument("-v", "--version", help="Specify the Composer version in the format vX.X.X corresponding to the Release tag on Github [REQUIRED]", required=True)
-    argument_parser.add_argument("-p", "--path", help="Specify desired directory file path to store the Composer version [REQUIRED]", required=True)
-    argument_parser.add_argument("-w", "--wipe", help="Delete the existing version before installing", action="store_true")
-    argument_parser.add_argument("-vb", "--verbose", help="Enable verbose errors", action="store_true")
+    argument_parser.add_argument("-r", "--release", help="Specify the Composer release in the format vX.X.X corresponding to the Release tag on Github [REQUIRED]", required=True)
+    argument_parser.add_argument("-p", "--path", help="Specify desired directory file path to store the Composer release [REQUIRED]", required=True)
+    argument_parser.add_argument("-w", "--wipe", help="Delete the existing release before installing", action="store_true")
+    argument_parser.add_argument("-v", "--verbose", help="Enable verbose errors", action="store_true")
     argument_parser.add_argument("-s", "--start", help="Skip download and installation and just start and open Composer", action="store_true")
     args = argument_parser.parse_args()
-    return Arguments(args.version, args.path, args.wipe, args.verbose, args.start)
+    return Arguments(args.release, args.path, args.wipe, args.verbose, args.start)
 
 def change_dir(args):
     if args.path is not None:
@@ -36,36 +36,36 @@ def change_dir(args):
 
 def wipe(args):
     if args.wipe:
-        if os.path.isdir(os.path.join(args.path, "Composer %s" % args.version)):
-            print("\n[Deleting existing version of Composer %s]" % args.version)
+        if os.path.isdir(os.path.join(args.path, "Composer %s" % args.release)):
+            print("\n[Deleting existing release of Composer %s]" % args.release)
             print("\n[This can take some time, please wait...]")
-            path = os.path.join(os.getcwd(), "Composer %s\\" % args.version)
+            path = os.path.join(os.getcwd(), "Composer %s\\" % args.release)
             try:
                 shutil.rmtree(path)
-                print("\n[Wipe of Composer %s Complete]" % args.version)
+                print("\n[Wipe of Composer %s Complete]" % args.release)
             except Exception as e:
                 print("[Error Deleting Directory]")
                 if args.verbose:
                     print(e)
         else:
-            print("\n[Composer version %s not found. Skipping Deletion]" % args.version)
+            print("\n[Composer release %s not found. Skipping Deletion]" % args.release)
     else:
         print("\n[Wipe flag not set. Skipping Deletion]")
         return
 
 #TODO: Fix failure to stop on exist
 def make_composer_dir(args):
-    if not os.path.isdir(".\Composer %s" % args.version):#and not args.wipe:
-        print("\n[Creating new directory at %s\Composer %s]" % (args.path, args.version))
+    if not os.path.isdir(".\Composer %s" % args.release):#and not args.wipe:
+        print("\n[Creating new directory at %s\Composer %s]" % (args.path, args.release))
         try:
-            os.system("mkdir \"Composer %s\"" % args.version)
-            os.chdir(".\Composer %s\\" % args.version)
+            os.system("mkdir \"Composer %s\"" % args.release)
+            os.chdir(".\Composer %s\\" % args.release)
         except Exception as e:
             print("[Error Creating Directory]")
             if args.verbose:
                     print(e)
     else:
-        print("[Composer %s directory already exists. Please specify -w/--wipe to delete and reinstall this version.]" % args.version)
+        print("[Composer %s directory already exists. Please specify -w/--wipe to delete and reinstall this release.]" % args.release)
 
 def clone_repo(args):
     print("\n[Cloning Composer Repository]\n")
@@ -82,12 +82,12 @@ def clone_repo(args):
     os.chdir("BotFramework-Composer\Composer")
 
 
-def check_out_version(args):
-    print("\n[Checking out %s]\n" %args.version)
+def check_out_release(args):
+    print("\n[Checking out %s]\n" %args.release)
     try:
-        os.system("git checkout tags/%s" % args.version)
+        os.system("git checkout tags/%s" % args.release)
     except Exception as e:
-        print("[Error Checking Out %s]" % args.version)
+        print("[Error Checking Out %s]" % args.release)
         if args.verbose:
             print(e)
         exit()
@@ -137,7 +137,7 @@ def main():
         wipe(args)
         make_composer_dir(args)
         clone_repo(args)
-        check_out_version(args)
+        check_out_release(args)
         build(args)
         install(args)
 
