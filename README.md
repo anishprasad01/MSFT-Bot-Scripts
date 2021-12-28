@@ -1,9 +1,6 @@
 # MSFT-Bot-Scripts
 An evolving collection of scripts to automate setup and deployment for bots built with the Microsoft Bot Framework. Everything contained within is a work-in-progress, and will be incremented upon as the need arises, or as an idea strikes me.
 
-# BotDeployer Instructions
-TODO
-
 # BuildComposer Instructions
 This script clones the [Microsoft Bot Framework Composer](https://github.com/Microsoft/BotFramework-Composer) repository, checks-out a specific version, and then runs the build and install operations before opening up the application in the default browser.
 The script and its accompanying tests are written in Python and make use of the `os` and `shutil` libraries.
