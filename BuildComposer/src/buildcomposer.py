@@ -53,7 +53,6 @@ def wipe(args):
         print("\n[Wipe flag not set. Skipping Deletion]")
         return
 
-#TODO: Fix failure to stop on exist
 def make_composer_dir(args):
     if not os.path.isdir(".\Composer %s" % args.release):#and not args.wipe:
         print("\n[Creating new directory at %s\Composer %s]" % (args.path, args.release))
