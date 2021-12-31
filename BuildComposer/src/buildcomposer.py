@@ -4,13 +4,13 @@ import argparse
 import webbrowser
 
 class Arguments:
-  def __init__(self, r, p, w, v, s):
+  def __init__(self, r, p, w, v, s, q):
     self.release = r
     self.path = p
     self.wipe = w
     self.verbose = v
     self.start = s
-
+    self.qnakey = q
 
 def parse_args():
     argument_parser = argparse.ArgumentParser()
@@ -19,8 +19,9 @@ def parse_args():
     argument_parser.add_argument("-w", "--wipe", help="Delete the existing release before installing", action="store_true")
     argument_parser.add_argument("-v", "--verbose", help="Enable verbose errors", action="store_true")
     argument_parser.add_argument("-s", "--start", help="Skip download and installation and just start and open Composer", action="store_true")
+    argument_parser.add_argument("-q", "--qnakey", help="QNA Subscription Key for bots implementing QNA")
     args = argument_parser.parse_args()
-    return Arguments(args.release, args.path, args.wipe, args.verbose, args.start)
+    return Arguments(args.release, args.path, args.wipe, args.verbose, args.start, args.qnakey)
 
 def change_dir(args):
     if args.path is not None:
@@ -91,6 +92,15 @@ def check_out_release(args):
             print(e)
         exit()
 
+def set_qna_key(args):
+    print("\n[Setting QNA Key]")
+    try:
+        os.system("set QNA_SUBSCRIPTION_KEY=%s" % args.qnakey)
+    except Exception as e:
+        print("[Error setting QNA key]")
+        if args.verbose:
+            print(e)
+        exit()
 
 def build(args):
     print("\n[Building Composer]\n")
@@ -116,7 +126,7 @@ def start(args):
     print("\n[Starting Composer & Opening in Default Browser]\n")
 
     if args.start:
-        os.chdir("BotFramework-Composer\Composer")
+        os.chdir("Composer %s\BotFramework-Composer\Composer" % args.release)
 
     try:
         webbrowser.open("http://localhost:3000")
@@ -139,6 +149,9 @@ def main():
         check_out_release(args)
         build(args)
         install(args)
+
+    if args.qnakey is not None:
+        set_qna_key(args)
 
     start(args)
 
