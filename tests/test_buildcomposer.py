@@ -4,10 +4,10 @@ import unittest.mock
 import io
 import os
 
-class Test_TestDirectoryOperations(unittest.TestCase):
+class Test_DirectoryOperations(unittest.TestCase):
     def setUp(self):
         # release, path, wipe, verbose, start
-        self.args = bc_script.Arguments("v2.0.0", "C:\ComposerTests", True, False, False)
+        self.args = bc_script.Arguments("latest", "C:\ComposerTests", True, False, False)
         self.dir = "Composer %s" % self.args.release
         bc_script.change_dir(self.args)
 
@@ -32,3 +32,15 @@ class Test_TestDirectoryOperations(unittest.TestCase):
         expected = "\n[Wipe flag not set. Skipping Deletion]\n"
         self.assertEquals(mock_stdout.getvalue(), expected)
 
+class Test_QNAKey(unittest.TestCase):
+    def setUp(self):
+        return
+
+    def test_key_specified(self):
+        return
+    
+    def test_key_not_specified(self):
+        return
+
+    def tearDown(self):
+        return

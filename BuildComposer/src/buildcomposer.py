@@ -14,13 +14,17 @@ class Arguments:
 
 def parse_args():
     argument_parser = argparse.ArgumentParser()
-    argument_parser.add_argument("-r", "--release", help="Specify the Composer release in the format vX.X.X corresponding to the Release tag on Github [REQUIRED]", required=True)
+    argument_parser.add_argument("-r", "--release", help="Specify the Composer release in the format vX.X.X corresponding to the Release tag on Github")#, required=True)
     argument_parser.add_argument("-p", "--path", help="Specify desired directory file path to store the Composer release [REQUIRED]", required=True)
     argument_parser.add_argument("-w", "--wipe", help="Delete the existing release before installing", action="store_true")
     argument_parser.add_argument("-v", "--verbose", help="Enable verbose errors", action="store_true")
     argument_parser.add_argument("-s", "--start", help="Skip download and installation and just start and open Composer", action="store_true")
     argument_parser.add_argument("-q", "--qnakey", help="QNA Subscription Key for bots implementing QNA")
     args = argument_parser.parse_args()
+
+    if not args.release:
+        args.release = "Latest"
+
     return Arguments(args.release, args.path, args.wipe, args.verbose, args.start, args.qnakey)
 
 def change_dir(args):
@@ -45,9 +49,10 @@ def wipe(args):
                 shutil.rmtree(path)
                 print("\n[Wipe of Composer %s Complete]" % args.release)
             except Exception as e:
-                print("[Error Deleting Directory]")
+                print("[Error Deleting Directory. Specify -v for verbose errors or try deleting the direcroty manually.]")
                 if args.verbose:
                     print(e)
+                exit()
         else:
             print("\n[Composer release %s not found. Skipping Deletion]" % args.release)
     else:
@@ -146,7 +151,12 @@ def main():
         wipe(args)
         make_composer_dir(args)
         clone_repo(args)
-        check_out_release(args)
+
+        if args.release != "latest":
+            check_out_release(args)
+        else:
+            print("[Skipping checkout, using latest version]")
+
         build(args)
         install(args)
 
