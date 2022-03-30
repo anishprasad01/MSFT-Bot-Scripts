@@ -1,3 +1,5 @@
+import subprocess
+from subprocess import Popen, PIPE, STDOUT
 import os
 import argparse
 
@@ -30,29 +32,38 @@ def parse_args():
     args = argument_parser.parse_args()
     return Arguments(args.region, args.groupname, args.botname, args.svcplanname, args.webappname, args.appsvcname, args.password, args.sku, args.tenant, args.path)
 
-def create_app_registration(args):
-    if args.multitenant:
-        os.system("az ad app create --display-name %s --password %s --available-to-other-tenants")
-    else:
-        os.system("az ad app create --display-name %s --password %s")
+def find_az():
+    cmd = 'where az'
+    p = Popen(cmd, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT, close_fds=True)
+    output = p.stdout.read()
+    res = output.splitlines()[1]
+    az_location = str(res)[2:len(str(res))-1]
+    return az_location
 
-def create_deployment(args):
-    return
+def create_app_registration(args, az_location):
+    subprocess.check_call([az_location, "ad", "app", "create", "--display-name", args.botid, "--password", args.password, "--available-to-other-tenants"])
 
-def prepare_deploy(args):
-    return
+# def create_resources(args):
+#     return
 
-def zip_deploy(args):
-    return
+# def build_project(args):
+#     return
+
+# def prepare_deploy(args):
+#     return
+
+# def zip_deploy(args):
+#     return
 
 def main():
     args = parse_args()
+    az_location = find_az() 
     os.chdir(args.path)
-    create_app_registration(args)
-    create_deployment(args)
-    prepare_deploy(args)
-    zip_deploy(args)
-
+    create_app_registration(args, az_location)
+    #create_resources(args)
+    #build_project(args)
+    #prepare_deploy(args)
+    #zip_deploy(args)
 
 # __name__
 if __name__=="__main__":
